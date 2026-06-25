@@ -3,45 +3,29 @@
 ## 技术栈（实际版本）
 - 后端：Spring Boot 3.4.7 + Java 21 + MyBatis-Plus 3.5.10 + MySQL 8.0 / H2(dev)
 - 前端：React 19.2.x + Vite 8.x + TypeScript 6.0 + Tailwind CSS 4.x + shadcn/ui
-- 代码仓库：GitHub（已连接）
+- 代码仓库：GitHub（已连接 + PAT 写入权限）
 - 通知渠道：飞书（已连接）
-- Maven：D:\tools\apache-maven-3.9.9
-- JAVA_HOME：C:\Program Files\Java\jdk-21
+- Maven：D:\tools\apache-maven-3.9.9 | JAVA_HOME：C:\Program Files\Java\jdk-21
+- GitHub CLI：C:\Program Files\GitHub CLI\gh.exe（通过 GH_TOKEN PAT 认证）
 
-## 项目结构
-```
-D:\code\auto-project\
-├── backend/                  # Spring Boot 后端
-│   ├── pom.xml
-│   ├── mvnw.cmd
-│   └── src/main/java/com/example/autoproject/
-│       ├── AutoProjectApplication.java
-│       ├── common/           # Result, BusinessException, GlobalExceptionHandler
-│       ├── controller/       # HealthController
-│       ├── service/          # (待扩展)
-│       ├── mapper/           # MyBatis-Plus mapper
-│       └── entity/           # 数据库实体
-├── frontend/                 # React + Vite 前端
-│   ├── src/
-│   │   ├── components/       # AppLayout
-│   │   ├── pages/            # HomePage
-│   │   ├── lib/              # api.ts, utils.ts
-│   │   └── router.tsx        # React Router
-│   └── dist/                 # 构建产物
-└── .workbuddy/               # WorkBuddy 配置（Skill + Memory）
-```
+## 项目仓库
+- URL：https://github.com/lirushan/auto-project（公开）
+- 分支：main
+- Issue 标签：ready-for-dev / ai-in-progress / awaiting-review / ai-failed
 
 ## 自动化流水线
-- **每日全栈开发流水线**（automation-1782194315595）：每天 02:00 执行，状态 ACTIVE
-- 完整流程：GitHub Issue → 前后端并行 → 测试 → CloudStudio/CloudBase 部署 → 飞书通知
+- **每日全栈开发流水线**（automation-1782194315595）：每天 02:00，ACTIVE
+- Issue 方式：`gh issue list` 拉取 → `gh issue edit` 改标签 → `gh issue comment` 写验收报告
+- 状态流转：ready-for-dev → ai-in-progress → awaiting-review / ai-failed
 
-## 已验证
-- ✅ 后端编译通过
-- ✅ 后端单元测试通过（Spring Boot + H2）
-- ✅ 前端构建通过（Vite + Tailwind CSS v4）
-- ✅ GitHub MCP 已连接
-- ✅ 飞书 MCP 已连接
+## 已完成
+- ✅ 后端：User CRUD API（Entity/Mapper/Service/Controller/Test）
+- ✅ 前端：UserListPage + UserDialog
+- ✅ 后端测试 18/18 PASS，前端构建 PASS
+- ✅ Git push 到 GitHub
+- ✅ GitHub labels 创建（4个）
+- ✅ GitHub PAT 配置（gh CLI 可读写 Issue）
+- ✅ Issue #1 已流转至 awaiting-review
 
 ## 待办
-- 初始化 Git 仓库并 push 到 GitHub
-- 在 GitHub 创建 `ready-for-dev` label
+- Issue #2：Docker 容器化（ready-for-dev，明日 02:00 自动处理）

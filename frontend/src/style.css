@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+.el-header {
+  --el-header-padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.el-main {
+  background: #f5f7fa;
+  min-height: calc(100vh - 60px);
+}

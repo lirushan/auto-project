@@ -25,3 +25,5 @@ frontend/dist/
 
 # Logs
 *.log
+.events
+.workbuddy
