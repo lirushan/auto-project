@@ -1,9 +1,15 @@
 spring:
+  threads:
+    virtual:
+      enabled: true
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:auto_project}?useUnicode=true&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true&connectionCollation=utf8mb4_unicode_ci
+    url: jdbc:mysql://${MYSQL_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:auto_project}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true&connectionCollation=utf8mb4_unicode_ci
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_PASSWORD:root123}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
   sql:
     init:
       mode: always
@@ -16,9 +22,9 @@ spring:
       timeout: 3000ms
       lettuce:
         pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 0
+          max-active: 50
+          max-idle: 20
+          min-idle: 5
 
 mybatis-plus:
   global-config:
@@ -30,6 +36,8 @@ mybatis-plus:
     map-underscore-to-camel-case: true
 
 logging:
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
   level:
     com.example.autoproject: INFO
     org.springframework.boot: INFO

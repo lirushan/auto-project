@@ -32,6 +32,17 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String generateStudentToken(Long studentId, String studentName) {
+        return Jwts.builder()
+                .subject(String.valueOf(studentId))
+                .claim("username", studentName)
+                .claim("role", "student")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(key)
+                .compact();
+    }
+
     public Claims parseToken(String token) {
         return Jwts.parser()
                 .verifyWith(key)
@@ -42,5 +53,9 @@ public class JwtUtil {
 
     public Long getUserId(String token) {
         return Long.valueOf(parseToken(token).getSubject());
+    }
+
+    public String getRole(String token) {
+        return parseToken(token).get("role", String.class);
     }
 }

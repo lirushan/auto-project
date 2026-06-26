@@ -1,8 +1,41 @@
-body {
-  margin: 0;
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+/* ============================================================
+   Auto Project — Global Styles & Element Plus Theme Overrides
+   Design language: modern purple gradient (matches LoginPage)
+   ============================================================ */
+
+/* === CSS Variables / Element Plus Primary Override === */
+:root {
+  --el-color-primary: #667eea;
+  --el-color-primary-light-3: #8b9cf0;
+  --el-color-primary-light-5: #a8b5f5;
+  --el-color-primary-light-7: #c5cef9;
+  --el-color-primary-light-8: #d4dafb;
+  --el-color-primary-light-9: #e2e6fd;
+  --el-color-primary-dark-2: #5a6fd9;
+  --el-border-radius-base: 8px;
+
+  /* Accent extras */
+  --brand-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --brand-dark: #1a1a2e;
+  --brand-glow: rgba(102, 126, 234, 0.15);
 }
 
+/* === Base Reset === */
+body {
+  margin: 0;
+  font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #1a1a2e;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Header (layout shell) === */
 .el-header {
   --el-header-padding: 0 20px;
   display: flex;
@@ -10,7 +43,160 @@ body {
   justify-content: space-between;
 }
 
+/* === Main content area — transparent so body gradient shows === */
 .el-main {
-  background: #f5f7fa;
-  min-height: calc(100vh - 60px);
+  background: transparent;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+/* ============================================================
+   ELEMENT PLUS COMPONENT OVERRIDES
+   ============================================================ */
+
+/* --- Primary button: brand gradient --- */
+.el-button--primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  letter-spacing: 2px;
+  font-weight: 500;
+  transition: opacity 0.25s, transform 0.15s;
+}
+.el-button--primary:hover {
+  background: linear-gradient(135deg, #7b93f5 0%, #8c5fbf 100%);
+  opacity: 0.95;
+}
+.el-button--primary:active {
+  background: linear-gradient(135deg, #5a6fd9 0%, #6a4190 100%);
+  transform: scale(0.98);
+}
+.el-button--primary.is-disabled,
+.el-button--primary.is-disabled:hover {
+  background: linear-gradient(135deg, #a8b5d0 0%, #b8a0c8 100%);
+}
+
+/* --- Card: frosted glass --- */
+.el-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  color: #1a1a2e;
+}
+.el-card__header {
+  color: #667eea;
+  font-weight: 600;
+  border-bottom-color: rgba(102, 126, 234, 0.12);
+}
+
+/* --- Table --- */
+.el-table {
+  --el-table-bg-color: rgba(255, 255, 255, 0.92);
+  --el-table-tr-bg-color: rgba(255, 255, 255, 0.92);
+  --el-table-header-bg-color: rgba(102, 126, 234, 0.06);
+  --el-table-row-hover-bg-color: rgba(102, 126, 234, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 520px !important;
+}
+.el-table th.el-table__cell {
+  color: #1a1a2e;
+  font-weight: 600;
+  font-size: 14px;
+}
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: rgba(102, 126, 234, 0.03);
+}
+
+/* --- Dialog --- */
+.el-dialog {
+  --el-dialog-bg-color: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+}
+.el-dialog__header {
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+/* --- Input / Select focus ring --- */
+.el-input__wrapper.is-focus,
+.el-select .el-input.is-focus .el-input__wrapper,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px #667eea inset;
+}
+
+/* --- Pagination --- */
+.el-pager li.is-active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+}
+.el-pager li:hover {
+  color: #667eea;
+}
+
+/* --- Tag --- */
+.el-tag {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* --- Loading --- */
+.el-loading-spinner .circular circle {
+  stroke: #667eea;
+}
+
+/* --- Form labels --- */
+.el-form-item__label {
+  color: #333;
+  font-weight: 500;
+}
+
+/* --- Popover / Dropdown menu --- */
+.el-dropdown-menu {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Checkbox --- */
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+.el-checkbox__input.is-checked + .el-checkbox__label {
+  color: #667eea;
+}
+
+/* ============================================================
+   COMMON PAGE WRAPPERS (inner pages use these classes)
+   Apply frosted-glass treatment
+   ============================================================ */
+.user-page,
+.role-page,
+.menu-page,
+.home,
+.page {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 24px;
+  min-height: calc(100vh - 150px);
+}
+
+/* Stats area large numbers (e.g. RegistrationPage) */
+.stats h2 {
+  color: #667eea !important;
+  font-weight: 700;
+  font-size: 28px;
+  margin: 0;
+  letter-spacing: -0.5px;
 }

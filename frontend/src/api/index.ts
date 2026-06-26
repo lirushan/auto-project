@@ -7,6 +7,17 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+api.interceptors.request.use((config) => {
+  const adminToken = localStorage.getItem('token')
+  const studentToken = localStorage.getItem('student_token')
+  if (studentToken && window.location.pathname.startsWith('/student')) {
+    config.headers.Authorization = `Bearer ${studentToken}`
+  } else if (adminToken) {
+    config.headers.Authorization = `Bearer ${adminToken}`
+  }
+  return config
+})
+
 api.interceptors.response.use(
   (res) => {
     const { code, message, data } = res.data

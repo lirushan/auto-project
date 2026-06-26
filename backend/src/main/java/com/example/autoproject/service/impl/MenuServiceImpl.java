@@ -12,9 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,7 +22,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public List<MenuVO> listMenuTree() {
         List<Menu> allMenus = list();
-        List<MenuVO> menuVOs = allMenus.stream().map(this::toVO).toList();
+        List<MenuVO> menuVOs = allMenus.stream().map(this::toVO).collect(Collectors.toList());
         return buildTree(menuVOs);
     }
 
@@ -33,7 +31,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         Menu menu = new Menu();
         menu.setParentId(dto.parentId() != null ? dto.parentId() : 0L);
         menu.setMenuName(dto.menuName());
-        menu.setMenuType(parseMenuType(dto.menuType()));
+        menu.setMenuType(dto.menuType() != null ? Integer.parseInt(dto.menuType()) : 1);
         menu.setPath(dto.path());
         menu.setComponent(dto.component());
         menu.setIcon(dto.icon());
@@ -50,18 +48,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public MenuVO updateMenu(Long id, MenuUpdateDTO dto) {
         Menu menu = getMenuByIdOrThrow(id);
-        if (dto.parentId() != null) {
-            menu.setParentId(dto.parentId());
-        }
+        if (dto.parentId() != null) menu.setParentId(dto.parentId());
         menu.setMenuName(dto.menuName());
-        menu.setMenuType(parseMenuType(dto.menuType()));
+        menu.setMenuType(dto.menuType() != null ? Integer.parseInt(dto.menuType()) : 1);
         menu.setPath(dto.path());
         menu.setComponent(dto.component());
         menu.setIcon(dto.icon());
         menu.setPermission(dto.permission());
-        if (dto.sortOrder() != null) {
-            menu.setSortOrder(dto.sortOrder());
-        }
+        if (dto.sortOrder() != null) menu.setSortOrder(dto.sortOrder());
         menu.setUpdateTime(LocalDateTime.now());
         updateById(menu);
         return toVO(menu);
@@ -69,93 +63,51 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     @Override
     public void deleteMenu(Long id) {
-        Menu menu = getMenuByIdOrThrow(id);
-
-        Long childCount = lambdaQuery().eq(Menu::getParentId, id).count();
-        if (childCount > 0) {
-            throw new BusinessException(400, "菜单下存在子菜单，无法删除");
-        }
-
-        removeById(menu.getId());
+        long childCount = lambdaQuery().eq(Menu::getParentId, id).count();
+        if (childCount > 0) throw new BusinessException(400, "存在子菜单无法删除");
+        removeById(id);
     }
 
-    private MenuVO toVO(Menu menu) {
-        return new MenuVO(
-                menu.getId(),
-                menu.getParentId(),
-                menu.getMenuName(),
-                menu.getMenuType(),
-                menu.getPath(),
-                menu.getComponent(),
-                menu.getIcon(),
-                menu.getPermission(),
-                menu.getSortOrder(),
-                menu.getStatus(),
-                menu.getVisible(),
-                menu.getCreateTime(),
-                menu.getUpdateTime(),
-                new ArrayList<>()
-        );
+    private MenuVO toVO(Menu m) {
+        MenuVO vo = new MenuVO();
+        vo.setId(m.getId());
+        vo.setParentId(m.getParentId());
+        vo.setMenuName(m.getMenuName());
+        vo.setMenuType(m.getMenuType());
+        vo.setPath(m.getPath());
+        vo.setComponent(m.getComponent());
+        vo.setIcon(m.getIcon());
+        vo.setPermission(m.getPermission());
+        vo.setSortOrder(m.getSortOrder());
+        vo.setStatus(m.getStatus());
+        vo.setVisible(m.getVisible());
+        vo.setCreateTime(m.getCreateTime());
+        vo.setUpdateTime(m.getUpdateTime());
+        vo.setChildren(new ArrayList<>());
+        return vo;
     }
 
-    private List<MenuVO> buildTree(List<MenuVO> menuVOs) {
-        Map<Long, List<MenuVO>> parentMap = menuVOs.stream()
-                .collect(Collectors.groupingBy(MenuVO::parentId));
-
-        menuVOs.forEach(menu -> {
-            List<MenuVO> children = parentMap.getOrDefault(menu.id(), new ArrayList<>());
-            // Replace the empty list with actual children
-            List<MenuVO> mutableChildren = new ArrayList<>(children);
-            if (!mutableChildren.isEmpty()) {
-                // Can't modify record fields, so the children field in MenuVO remains as-is
+    private List<MenuVO> buildTree(List<MenuVO> items) {
+        Map<Long, MenuVO> map = new HashMap<>();
+        List<MenuVO> roots = new ArrayList<>();
+        for (MenuVO item : items) map.put(item.getId(), item);
+        for (MenuVO item : items) {
+            Long pid = item.getParentId();
+            if (pid == null || pid == 0) roots.add(item);
+            else {
+                MenuVO parent = map.get(pid);
+                if (parent != null) {
+                    if (parent.getChildren() == null) parent.setChildren(new ArrayList<>());
+                    parent.getChildren().add(item);
+                }
             }
-        });
-
-        // Filter top-level menus and build tree recursively
-        return menuVOs.stream()
-                .filter(menu -> menu.parentId() == null || menu.parentId() == 0L)
-                .map(menu -> buildChildren(menu, parentMap))
-                .toList();
-    }
-
-    private MenuVO buildChildren(MenuVO parent, Map<Long, List<MenuVO>> parentMap) {
-        List<MenuVO> children = parentMap.getOrDefault(parent.id(), new ArrayList<>())
-                .stream()
-                .map(child -> buildChildren(child, parentMap))
-                .toList();
-
-        return new MenuVO(
-                parent.id(),
-                parent.parentId(),
-                parent.menuName(),
-                parent.menuType(),
-                parent.path(),
-                parent.component(),
-                parent.icon(),
-                parent.permission(),
-                parent.sortOrder(),
-                parent.status(),
-                parent.visible(),
-                parent.createTime(),
-                parent.updateTime(),
-                children
-        );
+        }
+        return roots;
     }
 
     private Menu getMenuByIdOrThrow(Long id) {
         Menu menu = getById(id);
-        if (menu == null) {
-            throw new BusinessException(404, "Menu not found");
-        }
+        if (menu == null) throw new BusinessException(404, "菜单不存在");
         return menu;
-    }
-
-    private int parseMenuType(String menuType) {
-        return switch (menuType) {
-            case "M" -> 1;
-            case "C" -> 2;
-            case "F" -> 3;
-            default -> Integer.parseInt(menuType);
-        };
     }
 }

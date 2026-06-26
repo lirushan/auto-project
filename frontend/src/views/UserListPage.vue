@@ -10,11 +10,18 @@
       <el-table-column prop="username" label="用户名" />
       <el-table-column prop="email" label="邮箱" />
       <el-table-column prop="createTime" label="创建时间" width="180" />
-      <el-table-column label="操作" width="240">
+      <el-table-column label="操作" width="100" fixed="right">
         <template #default="{ row }">
-          <el-button size="small" @click="openEdit(row)">编辑</el-button>
-          <el-button size="small" type="warning" @click="openRoleDialog(row)">分配角色</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+          <el-dropdown @command="(cmd: string) => handleCommand(cmd, row)">
+            <el-button size="small" type="primary" plain>操作</el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                <el-dropdown-item command="role">分配角色</el-dropdown-item>
+                <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -149,6 +156,14 @@ async function handleDelete(user: User) {
   await deleteUser(user.id)
   ElMessage.success('删除成功')
   fetchUsers()
+}
+
+function handleCommand(cmd: string, row: User) {
+  switch (cmd) {
+    case 'edit': openEdit(row); break
+    case 'role': openRoleDialog(row); break
+    case 'delete': handleDelete(row); break
+  }
 }
 
 async function openRoleDialog(user: User) {

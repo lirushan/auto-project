@@ -19,11 +19,18 @@
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="180" />
-      <el-table-column label="操作" width="280" fixed="right">
+      <el-table-column label="操作" width="120" fixed="right">
         <template #default="{ row }">
-          <el-button size="small" @click="openEdit(row)">编辑</el-button>
-          <el-button size="small" type="warning" @click="openMenuDialog(row)">菜单权限</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+          <el-dropdown @command="(cmd: string) => handleCommand(cmd, row)">
+            <el-button size="small" type="primary" plain>操作</el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                <el-dropdown-item command="menu">菜单权限</el-dropdown-item>
+                <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -38,7 +45,7 @@
       />
     </div>
 
-    <el-dialog v-model="dialogVisible" :title="isEdit ? '编辑角色' : '新增角色'" width="500px">
+    <el-dialog v-model="dialogVisible" :title="isEdit ? '编辑角色' : '新增角色'" width="540px" @closed="resetForm">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称" />
@@ -179,6 +186,14 @@ async function handleDelete(role: RoleVO) {
   fetchRoles()
 }
 
+function handleCommand(cmd: string, row: RoleVO) {
+  switch (cmd) {
+    case 'edit': openEdit(row); break
+    case 'menu': openMenuDialog(row); break
+    case 'delete': handleDelete(row); break
+  }
+}
+
 async function openMenuDialog(role: RoleVO) {
   currentRoleId.value = role.id
   menuDialogVisible.value = true
@@ -223,5 +238,9 @@ fetchRoles()
   margin-top: 16px;
   display: flex;
   justify-content: flex-end;
+}
+:deep(.el-dialog__body) {
+  max-height: 60vh;
+  overflow-y: auto;
 }
 </style>
